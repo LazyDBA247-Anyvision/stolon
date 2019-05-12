@@ -252,6 +252,10 @@ func (p *Manager) StartTmpMerged() error {
 				}
 			}
 			for k, v := range p.parameters {
+				// fix for keeper, listen on localhost
+                                if k == "listen_addresses" {
+                                        v = fmt.Sprintf("%s,127.0.0.1", v)
+                                }
 				// Single quotes needs to be doubled
 				ev := strings.Replace(v, `'`, `''`, -1)
 				if _, err := f.Write([]byte(fmt.Sprintf("%s = '%s'\n", k, ev))); err != nil {
@@ -700,6 +704,10 @@ func (p *Manager) writeConf() error {
 	return common.WriteFileAtomicFunc(filepath.Join(p.dataDir, postgresConf), 0600,
 		func(f io.Writer) error {
 			for k, v := range p.parameters {
+				// fix for keeper, listen on localhost
+                                if k == "listen_addresses" {
+                                        v = fmt.Sprintf("%s,127.0.0.1", v)
+                                }
 				// Single quotes needs to be doubled
 				ev := strings.Replace(v, `'`, `''`, -1)
 				if _, err := f.Write([]byte(fmt.Sprintf("%s = '%s'\n", k, ev))); err != nil {
